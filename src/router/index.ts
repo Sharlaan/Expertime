@@ -1,3 +1,4 @@
+import { CAMPAIGNS_URL } from '@/config';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 
@@ -6,15 +7,15 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    alias: '/campaigns',
+    alias: CAMPAIGNS_URL,
     name: 'campaigns',
     component: () => import('../components/CampaignsList.vue'),
   },
-  {
-    path: '/campaigns/:id',
-    name: 'campaign-details',
-    component: () => import('../components/Campaign.vue'),
-  },
+  // {
+  //   path: `${CAMPAIGNS_URL}/:id`,
+  //   name: 'campaign-details',
+  //   component: () => import('../components/Campaign.vue'),
+  // },
 ];
 
 const router = new VueRouter({
