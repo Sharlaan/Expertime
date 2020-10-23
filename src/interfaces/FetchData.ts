@@ -1,9 +1,15 @@
-type Props<T> = T extends T[] ? T[0] : T;
+// type Props<T> = T extends T[] ? T[0] : T;
+// export type QueryParams<T> = Partial<Record<keyof Props<T>, string>>;
 
-export type QueryParams<T> = Partial<Record<keyof Props<T>, string>>;
+export interface QueryParams {
+  query?: string; // fulltext search
+  brandId?: number;
+  page?: number;
+  limit?: number;
+}
 
-export interface FetchData<T> {
+export interface FetchData {
   endpoint: Request['url'];
-  params?: QueryParams<T>;
+  params?: QueryParams;
   options?: RequestInit;
 }
