@@ -3,7 +3,7 @@
 
 export interface QueryParams {
   query?: string; // fulltext search
-  brandId?: number;
+  brandId?: number | null;
   page?: number;
   limit?: number;
 }
