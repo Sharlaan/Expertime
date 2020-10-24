@@ -57,8 +57,10 @@ import { CAMPAIGNS_URL } from '@/config';
 import { Brand } from '@/interfaces/Brand';
 
 // TODO: Add resetFilters
-// TODO: Add pagination
+// TODO: Add loading indicators
+// TODO: Add pagination (exploit available filters in service's query params - _page & _limit)
 // TODO: Add styles
+// TODO: put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
 
 @Component
 export default class CampaignsList extends Vue {

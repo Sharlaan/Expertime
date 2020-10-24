@@ -1,6 +1,7 @@
 import { API_URL } from '@/config';
 import { FetchData, QueryParams } from '@/interfaces/FetchData';
 
+// This would be used for EXACT search, instead of fulltext search using 'q='
 // const stringifyParams = <T>(params?: QueryParams<T>) => {
 //   return params && Object.keys(params).length
 //     ? Object.entries(params).reduce((str, [key, value], index) => {
