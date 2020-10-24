@@ -12,39 +12,14 @@
         </option>
       </select>
       <v-spacer></v-spacer>
-      <button type="button" @click="search">Filter</button>
+      <v-btn @click="search" color="indigo darken-4">Filter</v-btn>
     </section>
 
     <section>
       <!-- REPLACE WITH VUETIFY DATATABLE (INCLUDING PAGINATION + FILTERS) -->
-      <ul @click="goToDetails" class="list">
-        <li v-for="c in campaigns" :key="c.requestId" :id="c.requestId">
-          <div>
-            <label> <strong>Status:</strong> </label>
-            <span>{{ c.requestStatus.name }}</span>
-          </div>
-          <div>
-            <label> <strong>Name:</strong> </label>
-            <span>{{ c.campaignName }}</span>
-          </div>
-          <div>
-            <label> <strong>Type:</strong> </label>
-            <span>{{ c.advice ? 'Advice' : 'Request' }}</span>
-          </div>
-          <div>
-            <label> <strong>Name:</strong> </label>
-            <span>{{ c.brand.name }}</span>
-          </div>
-          <div>
-            <label> <strong>Submission:</strong> </label>
-            <span>{{ c.submittedDate }}</span>
-            <!-- <span>{{ format(c.submittedDate) }}</span> -->
-          </div>
-          <div>
-            <label> <strong>Description:</strong> </label>
-            <span>{{ c.campaignDescription }}</span>
-          </div>
-        </li>
+      <ListHeader />
+      <ul @click="goToDetails" class="d-flex flex-column gutter px-0">
+        <ListItem v-for="c in campaigns" :key="c.requestId" :id="c.requestId" :campaign="c" />
       </ul>
     </section>
 
@@ -61,6 +36,8 @@ import { getAllCampaigns } from '@/services/campaigns.service';
 import { Campaign } from '@/interfaces/Campaign';
 import { CAMPAIGNS_URL } from '@/config';
 import { Brand } from '@/interfaces/Brand';
+import ListHeader from '@/components/ListHeader.vue';
+import ListItem from '@/components/ListItem.vue';
 
 // TODO: Add resetFilters
 // TODO: Add loading indicators
@@ -68,7 +45,9 @@ import { Brand } from '@/interfaces/Brand';
 // TODO: Add styles
 // TODO: Put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
 
-@Component
+@Component({
+  components: { ListHeader, ListItem },
+})
 export default class CampaignsList extends Vue {
   private CAMPAIGN_URL = CAMPAIGNS_URL;
   private campaigns: Campaign[] = [];
@@ -104,7 +83,7 @@ export default class CampaignsList extends Vue {
   }
 
   goToDetails(event: PointerEvent) {
-    const { id } = (event.target as HTMLElement).closest('li') as HTMLLIElement;
+    const { id } = (event.target as HTMLElement).closest('.v-card') as HTMLLIElement;
     this.$router.push({ name: 'campaign-edit', params: { id } });
   }
 
@@ -163,19 +142,9 @@ export default class CampaignsList extends Vue {
   }
 }
 
-.list {
-  li {
-    display: flex;
-    align-items: center;
-    border: 1px solid lightgrey;
-
-    :hover {
-      cursor: pointer;
-      border-color: grey;
-    }
-  }
-  li ~ li {
-    margin-top: 5px;
+.gutter {
+  .v-card ~ .v-card {
+    margin-top: 10px;
   }
 }
 </style>

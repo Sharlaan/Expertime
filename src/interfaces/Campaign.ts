@@ -31,7 +31,7 @@ interface Affiliate {
 
 interface RequestStatus {
   requestStatusId: number;
-  name: string;
+  name: 'TO_MODIFY' | 'SUBMITTED' | 'DRAFT' | 'TO_REVIEW' | 'VALIDATED' | 'REJECTED';
   value: string;
   step: number;
 }
@@ -54,10 +54,10 @@ interface User {
   email: string;
 }
 
-interface Author extends User {}
+type Author = User;
 
-interface Updater extends User {}
+type Updater = User;
 
-interface Validator extends User {}
+type Validator = User;
 
-interface Submitter extends User {}
+type Submitter = User;
