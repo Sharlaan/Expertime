@@ -23,6 +23,6 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .main-container {
-  padding: 24px;
+  padding: 40px;
 }
 </style>

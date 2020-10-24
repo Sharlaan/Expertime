@@ -84,7 +84,11 @@ export default class CampaignsList extends Vue {
 
   goToDetails(event: PointerEvent) {
     const { id } = (event.target as HTMLElement).closest('.v-card') as HTMLLIElement;
-    this.$router.push({ name: 'campaign-edit', params: { id } });
+    this.$router.push({
+      name: 'campaign-edit',
+      params: { id },
+      // query: { brands: this.brands },
+    });
   }
 
   async search() {

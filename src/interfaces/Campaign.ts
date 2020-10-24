@@ -36,7 +36,7 @@ interface RequestStatus {
   step: number;
 }
 
-interface Media {
+export interface Media {
   mediaId: number;
   name: string;
   value: string;
