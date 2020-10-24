@@ -2,8 +2,13 @@
 // export type QueryParams<T> = Partial<Record<keyof Props<T>, string>>;
 
 export interface QueryParams {
-  query?: string; // fulltext search
+  /**
+   * LIKE search on campaignName field
+   */
+  query?: string;
+  id?: number | null;
   brandId?: number | null;
+  start?: number;
   page?: number;
   limit?: number;
 }

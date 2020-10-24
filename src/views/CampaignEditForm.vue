@@ -11,7 +11,7 @@ import { Campaign } from '@/interfaces/Campaign';
 import { Component, Vue } from 'vue-property-decorator';
 import { getCampaign } from '../services/campaigns.service';
 
-// TODO: Since campaign-edit is tightly coupled to this list, maybe consider transforming it into a dialog instead of a full page, as suggested in https://vuetifyjs.com/en/components/data-tables/#crud-actions
+// TODO: Since campaign-edit is tightly coupled to the CampaignList, maybe consider transforming it into a dialog instead of a full page, as suggested in https://vuetifyjs.com/en/components/data-tables/#crud-actions
 
 @Component
 export default class CampaignEditForm extends Vue {
@@ -23,7 +23,8 @@ export default class CampaignEditForm extends Vue {
 
   async retrieveCampaign(index: Campaign['requestId']) {
     try {
-      this.currentCampaign = await getCampaign(index);
+      const { items } = await getCampaign(index);
+      this.currentCampaign = items;
     } catch (error) {
       console.error(error);
     }

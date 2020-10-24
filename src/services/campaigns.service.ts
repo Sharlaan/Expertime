@@ -3,8 +3,9 @@ import { Campaign } from '@/interfaces/Campaign';
 import { QueryParams } from '@/interfaces/FetchData';
 import fetchData from './http-common';
 
+// Note: added 'page' query param by default to make sure to receive the 'X-Total-Count' header from json-server
 export function getAllCampaigns(params?: QueryParams) {
-  return fetchData<Campaign[]>({ endpoint: CAMPAIGNS_URL, params });
+  return fetchData<Campaign[]>({ endpoint: CAMPAIGNS_URL, params: { page: 1, ...params } });
 }
 
 export function getCampaign(id: Campaign['requestId']) {

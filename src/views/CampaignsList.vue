@@ -16,6 +16,7 @@
     </section>
 
     <section>
+      <!-- REPLACE WITH VUETIFY DATATABLE (INCLUDING PAGINATION + FILTERS) -->
       <ul @click="goToDetails" class="list">
         <li v-for="c in campaigns" :key="c.requestId" :id="c.requestId">
           <div>
@@ -75,7 +76,8 @@ export default class CampaignsList extends Vue {
   private query = '';
   private selectedBrand?: Brand['brandId'] | null = null;
   private page = 1;
-  private totalPages = 3;
+  private totalPages = 1;
+  private itemsPerPage = 3;
 
   mounted() {
     this.retrieveBrands();
@@ -84,7 +86,8 @@ export default class CampaignsList extends Vue {
 
   async retrieveBrands() {
     try {
-      this.brands = await getAllBrands();
+      const { items } = await getAllBrands();
+      this.brands = items;
     } catch (error) {
       console.error(error);
     }
@@ -92,7 +95,9 @@ export default class CampaignsList extends Vue {
 
   async retrieveCampaigns() {
     try {
-      this.campaigns = await getAllCampaigns();
+      const { items, totalItems } = await getAllCampaigns();
+      this.campaigns = items;
+      this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
     } catch (error) {
       console.error(error);
     }
@@ -105,7 +110,8 @@ export default class CampaignsList extends Vue {
 
   async search() {
     try {
-      this.campaigns = await getAllCampaigns({ query: this.query, brandId: this.selectedBrand });
+      const { items } = await getAllCampaigns({ query: this.query, brandId: this.selectedBrand });
+      this.campaigns = items;
     } catch (error) {
       console.error(error);
     }
@@ -129,6 +135,7 @@ export default class CampaignsList extends Vue {
 
   > span:first-child {
     margin-right: 10px;
+    text-transform: uppercase;
   }
 
   select,
@@ -160,7 +167,12 @@ export default class CampaignsList extends Vue {
   li {
     display: flex;
     align-items: center;
-    border: 1px solid grey;
+    border: 1px solid lightgrey;
+
+    :hover {
+      cursor: pointer;
+      border-color: grey;
+    }
   }
   li ~ li {
     margin-top: 5px;

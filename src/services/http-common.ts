@@ -12,12 +12,17 @@ import { FetchData, QueryParams } from '@/interfaces/FetchData';
 // };
 
 // json-server docs: https://github.com/typicode/json-server#filter
+// Note: fulltext search seems to search using each character individually, instead of using all characters as a substring
+// so changed for LIKE search on 'campaignName' field, since can't modify the server-side filtering logic
 const stringifyParams = (params?: QueryParams) => {
   if (params === undefined || !Object.keys(params).length) return '';
 
   let queryParams = '';
-  if (params.query) queryParams += `&q=${params.query}`;
+  if (params.query) queryParams += `&campaignName_like=${params.query}`;
+  // if (params.query) queryParams += `&q=${params.query}`;
+  if (params.id) queryParams += `&requestId_like=${params.id}`;
   if (params.brandId) queryParams += `&brand.brandId=${params.brandId}`;
+  if (params.start) queryParams += `&_start=${params.start}`;
   if (params.page) queryParams += `&_page=${params.page}`;
   if (params.limit) queryParams += `&_limit=${params.limit}`;
 
@@ -34,5 +39,10 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
 
   // if (!response.ok) throw new Error(`ERROR ${response.status}: ${response.statusText}`);
   if (!response.ok) throw response;
-  return response.json() as Promise<R>;
+
+  // Another idea would be to save totalItems in the Store, then retrieve it in any consuming page
+  // this would prevent modifying the response interface to keep it simple (return response.json()) ?
+  const totalItems = +(response.headers.get('X-Total-Count') || 0);
+  const items = (await response.json()) as R;
+  return { items, totalItems };
 }
