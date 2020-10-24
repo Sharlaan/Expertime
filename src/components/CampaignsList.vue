@@ -1,5 +1,5 @@
 <template>
-  <div class="list">
+  <div>
     <section>
       <input type="text" placeholder="Search by name" v-model="query" />
       <select v-model="selectedBrand">
@@ -13,48 +13,35 @@
 
     <section>
       <h4>Campaigns List</h4>
-      <ul>
-        <li
-          v-for="(campaign, index) in campaigns"
-          :key="index"
-          @click="setActiveCampaign(campaign, index)"
-        >
-          {{ campaign.campaignName }}
+      <ul @click="goToDetails" class="list">
+        <li v-for="c in campaigns" :key="c.requestId" :id="c.requestId">
+          <div>
+            <label> <strong>Status:</strong> </label>
+            <span>{{ c.requestStatus.name }}</span>
+          </div>
+          <div>
+            <label> <strong>Name:</strong> </label>
+            <span>{{ c.campaignName }}</span>
+          </div>
+          <div>
+            <label> <strong>Type:</strong> </label>
+            <span>{{ c.advice ? 'Advice' : 'Request' }}</span>
+          </div>
+          <div>
+            <label> <strong>Name:</strong> </label>
+            <span>{{ c.brand.name }}</span>
+          </div>
+          <div>
+            <label> <strong>Submission:</strong> </label>
+            <span>{{ c.submittedDate }}</span>
+            <!-- <span>{{ format(c.submittedDate) }}</span> -->
+          </div>
+          <div>
+            <label> <strong>Description:</strong> </label>
+            <span>{{ c.campaignDescription }}</span>
+          </div>
         </li>
       </ul>
-    </section>
-
-    <section>
-      <div v-if="currentCampaign">
-        <h4>Campaign</h4>
-        <div>
-          <label> <strong>Status:</strong> </label>
-          <span>{{ currentCampaign.requestStatus.name }}</span>
-        </div>
-        <div>
-          <label> <strong>Name:</strong> </label>
-          <span>{{ currentCampaign.campaignName }}</span>
-        </div>
-        <div>
-          <label> <strong>Type:</strong> </label>
-          <span>{{ currentCampaign.advice ? 'Advice' : 'Request' }}</span>
-        </div>
-        <div>
-          <label> <strong>Name:</strong> </label>
-          <span>{{ currentCampaign.brand.name }}</span>
-        </div>
-        <div>
-          <label> <strong>Submission:</strong> </label>
-          <span>{{ format(currentCampaign.submittedDate) }}</span>
-        </div>
-        <div>
-          <label> <strong>Description:</strong> </label>
-          <span>{{ currentCampaign.campaignDescription }}</span>
-        </div>
-
-        <a :href="`${CAMPAIGN_URL}/${currentCampaign.requestId}`">Edit</a>
-      </div>
-      <p v-else>Click on a Campaign...</p>
     </section>
   </div>
 </template>
@@ -69,13 +56,15 @@ import { Campaign } from '@/interfaces/Campaign';
 import { CAMPAIGNS_URL } from '@/config';
 import { Brand } from '@/interfaces/Brand';
 
+// TODO: Add resetFilters
+// TODO: Add pagination
+// TODO: Add styles
+
 @Component
 export default class CampaignsList extends Vue {
   private CAMPAIGN_URL = CAMPAIGNS_URL;
   private campaigns: Campaign[] = [];
   private brands: Brand[] = [];
-  private currentCampaign: Campaign | null = null;
-  private currentIndex = -1;
   private query = '';
   private selectedBrand?: Brand['brandId'] | null = null;
 
@@ -100,22 +89,20 @@ export default class CampaignsList extends Vue {
     }
   }
 
-  setActiveCampaign(campaign: Campaign, index: number) {
-    this.currentCampaign = campaign;
-    this.currentIndex = index;
+  goToDetails(event: PointerEvent) {
+    const { id } = (event.target as HTMLElement).closest('li') as HTMLLIElement;
+    this.$router.push({ name: 'campaign-edit', params: { id } });
   }
 
   async search() {
     try {
       this.campaigns = await getAllCampaigns({ query: this.query, brandId: this.selectedBrand });
-      console.log('search', this.campaigns);
     } catch (error) {
       console.error(error);
     }
   }
 
-  // TODO: Add resetFilters
-
+  // FIXME: RangeError: Format string contains an unescaped latin alphabet character `n`
   format(date: string | number | Date, dateFormat: string) {
     if (!date) return '';
     if (typeof date === 'string') date = new Date(date);
@@ -124,10 +111,15 @@ export default class CampaignsList extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .list {
-  text-align: left;
-  max-width: 750px;
-  margin: auto;
+  li {
+    display: flex;
+    align-items: center;
+    border: 1px solid grey;
+  }
+  li ~ li {
+    margin-top: 5px;
+  }
 }
 </style>

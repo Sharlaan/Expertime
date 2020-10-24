@@ -1,0 +1,4 @@
+{
+  "/requests/:id": "/requests?requestId=:id",
+  "/brands/:id": "/brands?brandId=:id"
+}
