@@ -7,12 +7,12 @@ const routes: Array<RouteConfig> = [
   {
     path: '/', // '/campaigns',
     name: 'campaigns',
-    component: () => import('../components/CampaignsList.vue'),
+    component: () => import('../views/CampaignsList.vue'),
   },
   {
     path: '/campaigns/:id',
     name: 'campaign-edit',
-    component: () => import('../components/CampaignEditForm.vue'),
+    component: () => import('../views/CampaignEditForm.vue'),
   },
 ];
 

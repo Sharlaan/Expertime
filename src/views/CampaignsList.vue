@@ -1,18 +1,21 @@
 <template>
   <div>
-    <section>
+    <h4>All requests</h4>
+
+    <section class="filters-container">
+      <span>Filters</span>
       <input type="text" placeholder="Search by name" v-model="query" />
       <select v-model="selectedBrand">
-        <option selected></option>
+        <option :value="null">- brand -</option>
         <option v-for="{ brandId, name } in brands" :key="brandId" :value="brandId">
           {{ name }}
         </option>
       </select>
+      <v-spacer></v-spacer>
       <button type="button" @click="search">Filter</button>
     </section>
 
     <section>
-      <h4>Campaigns List</h4>
       <ul @click="goToDetails" class="list">
         <li v-for="c in campaigns" :key="c.requestId" :id="c.requestId">
           <div>
@@ -43,6 +46,8 @@
         </li>
       </ul>
     </section>
+
+    <v-pagination v-model="page" :length="totalPages"></v-pagination>
   </div>
 </template>
 
@@ -60,7 +65,7 @@ import { Brand } from '@/interfaces/Brand';
 // TODO: Add loading indicators
 // TODO: Add pagination (exploit available filters in service's query params - _page & _limit)
 // TODO: Add styles
-// TODO: put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
+// TODO: Put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
 
 @Component
 export default class CampaignsList extends Vue {
@@ -69,6 +74,8 @@ export default class CampaignsList extends Vue {
   private brands: Brand[] = [];
   private query = '';
   private selectedBrand?: Brand['brandId'] | null = null;
+  private page = 1;
+  private totalPages = 3;
 
   mounted() {
     this.retrieveBrands();
@@ -114,6 +121,41 @@ export default class CampaignsList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.filters-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+
+  > span:first-child {
+    margin-right: 10px;
+  }
+
+  select,
+  input {
+    background-color: 'grey';
+    border: 1px solid lightgrey;
+    border-radius: 4px;
+    padding: 5px 10px;
+  }
+
+  input {
+    margin-right: 10px;
+  }
+
+  button {
+    color: white;
+    background-color: indigo;
+    border-radius: 4px;
+    padding: 5px 10px;
+  }
+
+  select:hover,
+  button:hover {
+    cursor: pointer;
+  }
+}
+
 .list {
   li {
     display: flex;

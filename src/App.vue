@@ -3,14 +3,14 @@
     <Header />
 
     <v-main>
-      <router-view></router-view>
+      <router-view class="main-container"></router-view>
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import Header from './components/layout/Header.vue';
+import Header from './views/layout/Header.vue';
 
 export default Vue.extend({
   name: 'App',
@@ -20,3 +20,9 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.main-container {
+  padding: 24px;
+}
+</style>

@@ -35,4 +35,4 @@ export default class CampaignEditForm extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style>
