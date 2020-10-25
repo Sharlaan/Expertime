@@ -23,12 +23,12 @@
       </ul>
     </section>
 
-    <v-pagination v-model="page" :length="totalPages"></v-pagination>
+    <v-pagination circle v-model="page" :length="totalPages"></v-pagination>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import format from 'date-fns/format';
 import french from 'date-fns/locale/fr';
 import { getAllBrands } from '@/services/brands.service';
@@ -41,7 +41,8 @@ import ListItem from '@/components/ListItem.vue';
 
 // TODO: Add resetFilters
 // TODO: Add loading indicators
-// TODO: Add pagination (exploit available filters in service's query params - _page & _limit)
+// TODO: Extend pagination with itemsPerPage selector (_limit)
+// FIXME: changing page ignores filters, and vice-versa ... merge them.
 // TODO: Add styles
 // TODO: Put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
 
@@ -72,14 +73,32 @@ export default class CampaignsList extends Vue {
     }
   }
 
-  async retrieveCampaigns() {
+  async retrieveCampaigns(page = 1) {
     try {
-      const { items, totalItems } = await getAllCampaigns();
+      const { items, totalItems } = await getAllCampaigns({ page, limit: this.itemsPerPage });
       this.campaigns = items;
       this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async search() {
+    try {
+      const { items } = await getAllCampaigns({
+        page: 1,
+        query: this.query,
+        brandId: this.selectedBrand,
+      });
+      this.campaigns = items;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  @Watch('page', { immediate: true })
+  onPageChange(newPage: number, prevPage: number) {
+    this.retrieveCampaigns(newPage); // calls to fetch next page, which then will trigger a view refresh
   }
 
   goToDetails(event: PointerEvent) {
@@ -89,15 +108,6 @@ export default class CampaignsList extends Vue {
       params: { id },
       // query: { brands: this.brands },
     });
-  }
-
-  async search() {
-    try {
-      const { items } = await getAllCampaigns({ query: this.query, brandId: this.selectedBrand });
-      this.campaigns = items;
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   // FIXME: RangeError: Format string contains an unescaped latin alphabet character `n`
@@ -150,5 +160,9 @@ export default class CampaignsList extends Vue {
   .v-card ~ .v-card {
     margin-top: 10px;
   }
+}
+
+nav[role='navigation'] {
+  margin-top: 20px;
 }
 </style>

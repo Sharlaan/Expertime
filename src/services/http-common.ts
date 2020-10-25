@@ -40,9 +40,52 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
   // if (!response.ok) throw new Error(`ERROR ${response.status}: ${response.statusText}`);
   if (!response.ok) throw response;
 
-  // Another idea would be to save totalItems in the Store, then retrieve it in any consuming page
+  // Another idea would be to save totalItems and links in the Store, then retrieve it in any consuming page
   // this would prevent modifying the response interface to keep it simple (return response.json()) ?
-  const totalItems = +(response.headers.get('X-Total-Count') || 0);
+  const totalItems = response.headers.get('X-Total-Count');
+
+  /**
+   * Header 'Link' format:
+   * <http://localhost:3000/requests?_page=1&_limit=3>; rel="first", <http://localhost:3000/requests?_page=2&_limit=3>; rel="next", <http://localhost:3000/requests?_page=3&_limit=3>; rel="last"
+   */
+  const links = response.headers.get('Link');
+
+  // =======  USELESS CODE thanks to v-pagination (but still nice to know)  =======
+
+  // Extract url and pagination's name using regexp "named groups"
+  // const results = links
+  //   ? links.matchAll(/<(?<url>[\w:=\\/\d\\?&\\.]+)>; rel="(?<position>\w+)"(, |)/g)
+  //   : null;
+
+  // const paginationLinks = results
+  //   ? Array.from(results).reduce(
+  //       (pg, [fullmatch, url, position, comma]) => {
+  //         pg[position as 'first' | 'prev' | 'next' | 'last'] = url;
+  //         return pg;
+  //       },
+  //       { first: '', prev: '', next: '', last: '' },
+  //     )
+  //   : null;
+
+  // Alternative implementation, more classic ...
+  // const paginationLinks = links
+  //   ? links.split(', ').reduce(
+  //       (pl, l) => {
+  //         const temp = l.split('; rel=');
+  //         const lastWord = temp[1].replace(/"/g, '') as 'first' | 'prev' | 'next' | 'last';
+  //         pl[lastWord] = temp[0].replace(/(<|>)/g, '');
+  //         return pl;
+  //       },
+  //       { first: '', prev: '', next: '', last: '' },
+  //     )
+  // //   : null;
+
+  // console.log('paginationLinks', paginationLinks);
+
   const items = (await response.json()) as R;
-  return { items, totalItems };
+  return {
+    items,
+    ...(totalItems ? { totalItems: +totalItems } : {}),
+    // ...(paginationLinks ? { paginationLinks } : {}),
+  };
 }

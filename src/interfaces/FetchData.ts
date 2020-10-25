@@ -2,6 +2,7 @@
 // export type QueryParams<T> = Partial<Record<keyof Props<T>, string>>;
 
 export interface QueryParams {
+  page: number; // required, so server returns the 'X-Total-Count' and 'Link' headers
   /**
    * LIKE search on campaignName field
    */
@@ -9,7 +10,6 @@ export interface QueryParams {
   id?: number | null;
   brandId?: number | null;
   start?: number;
-  page?: number;
   limit?: number;
 }
 
