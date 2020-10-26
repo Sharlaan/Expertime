@@ -33,8 +33,14 @@
         ></v-text-field>
 
         <v-row class="ma-0">
-          <v-col cols="6" v-for="{ mediaId, value } in medias" :key="mediaId" class="pa-0">
-            <v-checkbox :label="value"></v-checkbox>
+          <v-col cols="6" v-for="m in medias" :key="m.mediaId" class="pa-0">
+            <v-checkbox
+              v-model="media"
+              :value="m"
+              :value-comparator="(a, b) => a.mediaId === b.mediaId"
+              :label="m.value"
+              hide-details
+            ></v-checkbox>
           </v-col>
         </v-row>
 
@@ -123,6 +129,7 @@ export default class CampaignEditForm extends Vue {
     if (val) {
       this.brand = val[0].brand;
       this.name = val[0].campaignName;
+      this.media = val[0].media;
     }
   }
 
