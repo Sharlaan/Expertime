@@ -16,7 +16,9 @@
             large
             color="grey darken-1"
             v-else-if="campaign.requestStatus.name === 'SUBMITTED'"
-          ></v-icon>
+          >
+            mdi-timer-sand
+          </v-icon>
           <v-icon large color="grey darken-1" v-else-if="campaign.requestStatus.name === 'DRAFT'">
             mdi-timer-sand
           </v-icon>
@@ -58,9 +60,7 @@
       </v-col>
       <v-col cols="1">
         <v-layout justify-end>
-          <v-icon x-large color="blue-grey lighten-2">
-            mdi-chevron-right
-          </v-icon>
+          <v-icon x-large color="blue-grey lighten-2"> mdi-chevron-right </v-icon>
         </v-layout>
       </v-col>
     </v-card>
