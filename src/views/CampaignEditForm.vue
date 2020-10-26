@@ -90,6 +90,7 @@ export default class CampaignEditForm extends Vue {
     // (v: string) => v.length <= 20 || 'Name must be less than 20 characters',
   ];
   private medias: Media[] = this.rearrangeMedias();
+  private media: Media[] = [];
   private mediaRules = [(v: Media) => !!v || 'Media is required, please select at least one'];
   private decisionDeadlineRules = [(v: Date) => !!v || 'Deadline is required'];
 
@@ -118,7 +119,7 @@ export default class CampaignEditForm extends Vue {
   }
 
   @Watch('currentCampaign', { immediate: true, deep: true })
-  onCurrentCampaignChanged(val: any, oldVal: any) {
+  onCurrentCampaignChanged(val: Campaign[], oldVal: Campaign[]) {
     if (val) {
       this.brand = val[0].brand;
       this.name = val[0].campaignName;
@@ -131,7 +132,7 @@ export default class CampaignEditForm extends Vue {
   rearrangeMedias() {
     const rearrangedMedias = [...MEDIAS];
     const othersMedia = rearrangedMedias.splice(
-      MEDIAS.findIndex(m => m.value === 'Others'),
+      MEDIAS.findIndex((m) => m.value === 'Others'),
       1,
     )[0];
     return rearrangedMedias
