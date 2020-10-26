@@ -32,7 +32,7 @@
           required
         ></v-text-field>
 
-        <v-row class="ma-0">
+        <v-row class="ma-0 mb-12">
           <v-col cols="6" v-for="m in medias" :key="m.mediaId" class="pa-0">
             <v-checkbox
               v-model="media"
@@ -44,17 +44,16 @@
           </v-col>
         </v-row>
 
-        <!-- <v-menu
+        <v-menu
           ref="menu"
           v-model="menu"
           :close-on-content-click="false"
-          :return-value.sync="decisionDeadline"
           transition="scale-transition"
           offset-y
           min-width="290px"
         >
           <template v-slot:activator="{ on, attrs }">
-            <v-combobox
+            <v-text-field
               v-model="decisionDeadline"
               label="Decision deadline"
               prepend-icon="mdi-calendar"
@@ -62,10 +61,18 @@
               v-bind="attrs"
               v-on="on"
               required
-            ></v-combobox>
+            ></v-text-field>
           </template>
-          <v-date-picker v-model="decisionDeadline" no-title scrollable></v-date-picker>
-        </v-menu> -->
+          <v-date-picker
+            ref="picker"
+            v-model="decisionDeadline"
+            @change="saveDate"
+            :first-day-of-week="1"
+            locale="fr-FR"
+            no-title
+            scrollable
+          ></v-date-picker>
+        </v-menu>
       </v-container>
     </v-form>
   </section>
@@ -98,6 +105,7 @@ export default class CampaignEditForm extends Vue {
   private medias: Media[] = this.rearrangeMedias();
   private media: Media[] = [];
   private mediaRules = [(v: Media) => !!v || 'Media is required, please select at least one'];
+  private decisionDeadline: Date = new Date();
   private decisionDeadlineRules = [(v: Date) => !!v || 'Deadline is required'];
 
   mounted() {
@@ -131,6 +139,7 @@ export default class CampaignEditForm extends Vue {
       this.brand = currentCampaign.brand;
       this.name = currentCampaign.campaignName;
       this.media = currentCampaign.media;
+      this.decisionDeadline = currentCampaign.decisionDeadline;
     }
   }
 
@@ -171,7 +180,7 @@ export default class CampaignEditForm extends Vue {
   }
 
   @Watch('media', { immediate: true })
-  async onmediaChanged(media: Campaign['media'] /*, oldVal: Campaign['media']*/) {
+  async onMediaChanged(media: Campaign['media'] /*, oldVal: Campaign['media']*/) {
     if (media && this.currentCampaign && media !== this.currentCampaign.media) {
       try {
         await updateCampaign(this.currentCampaign.requestId, { media });
@@ -179,6 +188,34 @@ export default class CampaignEditForm extends Vue {
         console.error(error);
       }
     }
+  }
+
+  @Watch('decisionDeadline', { immediate: true })
+  async onDeadlineChanged(
+    decisionDeadline: Campaign['decisionDeadline'] /*, oldVal: Campaign['decisionDeadline']*/,
+  ) {
+    if (
+      decisionDeadline &&
+      this.currentCampaign &&
+      decisionDeadline !== this.currentCampaign.decisionDeadline
+    ) {
+      try {
+        await updateCampaign(this.currentCampaign.requestId, { decisionDeadline });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  @Watch('menu', { immediate: true })
+  onMenuChanged(isOpen: boolean) {
+    // @ts-expect-error 'Unknown API'
+    isOpen && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
+  }
+
+  saveDate(date: Date) {
+    // @ts-expect-error 'Unknown API'
+    this.$refs.menu.saveDate(date);
   }
 
   /** Sort MEDIAS alphabetically on value, then append Others, then display them inline + flexwrap */
