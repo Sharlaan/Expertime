@@ -43,7 +43,6 @@ import ListItem from '@/components/ListItem.vue';
 // TODO: Add resetFilters
 // TODO: Add loading indicators
 // TODO: Extend pagination with itemsPerPage selector (_limit)
-// FIXME: changing page ignores filters, and vice-versa ... merge them.
 // TODO: Add styles
 // TODO: Put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
 // TODO: Add error notifications
@@ -75,20 +74,11 @@ export default class CampaignsList extends Vue {
     }
   }
 
-  async retrieveCampaigns(page = 1) {
-    try {
-      const { items, totalItems } = await getAllCampaigns({ page, limit: this.itemsPerPage });
-      this.campaigns = items;
-      this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async search() {
+  async retrieveCampaigns() {
     try {
       const { items, totalItems } = await getAllCampaigns({
-        page: 1,
+        page: this.page,
+        limit: this.itemsPerPage,
         query: this.query,
         brandId: this.selectedBrand,
       });
@@ -99,9 +89,14 @@ export default class CampaignsList extends Vue {
     }
   }
 
+  search() {
+    this.page = 1; // prevents nasty bug if you are on a certain page > first and filtering yields results only for one page
+    this.retrieveCampaigns();
+  }
+
   @Watch('page', { immediate: true })
-  onPageChange(newPage: number /*, prevPage: number*/) {
-    this.retrieveCampaigns(newPage); // calls to fetch next page, which then will trigger a view refresh
+  onPageChange(/*newPage: number , prevPage: number*/) {
+    this.retrieveCampaigns();
   }
 
   goToDetails(event: PointerEvent) {
