@@ -76,7 +76,7 @@ import { Brand } from '@/interfaces/Brand';
 import { Campaign, Media } from '@/interfaces/Campaign';
 import { getAllBrands } from '@/services/brands.service';
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { getCampaign } from '../services/campaigns.service';
+import { getCampaign, updateCampaign } from '../services/campaigns.service';
 import MEDIAS from '../assets/medias';
 
 // TODO: Since campaign-edit is tightly coupled to the CampaignList, maybe consider transforming it into a dialog instead of a full page, as suggested in https://vuetifyjs.com/en/components/data-tables/#crud-actions
@@ -108,7 +108,7 @@ export default class CampaignEditForm extends Vue {
 
   async retrieveBrands() {
     try {
-      const { items } = await getAllBrands();
+      const items = await getAllBrands();
       this.brands = items;
     } catch (error) {
       console.error(error);
@@ -117,23 +117,69 @@ export default class CampaignEditForm extends Vue {
 
   async retrieveCampaign(index: Campaign['requestId']) {
     try {
-      const { items } = await getCampaign(index);
-      this.currentCampaign = items;
+      // @ts-expect-error 'Somehow the server is returning an array instead of single item ...'
+      const [item] = await getCampaign(index);
+      this.currentCampaign = item;
     } catch (error) {
       console.error(error);
     }
   }
 
   @Watch('currentCampaign', { immediate: true, deep: true })
-  onCurrentCampaignChanged(val: Campaign[], oldVal: Campaign[]) {
-    if (val) {
-      this.brand = val[0].brand;
-      this.name = val[0].campaignName;
-      this.media = val[0].media;
+  onCurrentCampaignChanged(currentCampaign: Campaign /*, oldVal: Campaign[]*/) {
+    if (currentCampaign) {
+      this.brand = currentCampaign.brand;
+      this.name = currentCampaign.campaignName;
+      this.media = currentCampaign.media;
     }
   }
 
-  // edit(event: any) {}
+  @Watch('brand', { immediate: true })
+  async onBrandChanged(
+    selectedBrandName: Campaign['brand']['name'] /*, oldVal: Campaign['brand']['name']*/,
+  ) {
+    if (
+      selectedBrandName &&
+      this.currentCampaign &&
+      selectedBrandName !== this.currentCampaign.brand.name
+    ) {
+      const brand = this.brands.find((b) => b.name === selectedBrandName);
+      try {
+        await updateCampaign(this.currentCampaign.requestId, { brand });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  // TODO: Add debounce
+  @Watch('name', { immediate: true })
+  async onCampaignNameChanged(
+    campaignName: Campaign['campaignName'] /*, oldVal: Campaign['campaignName']*/,
+  ) {
+    if (
+      campaignName &&
+      this.currentCampaign &&
+      campaignName !== this.currentCampaign.campaignName
+    ) {
+      try {
+        await updateCampaign(this.currentCampaign.requestId, { campaignName });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  @Watch('media', { immediate: true })
+  async onmediaChanged(media: Campaign['media'] /*, oldVal: Campaign['media']*/) {
+    if (media && this.currentCampaign && media !== this.currentCampaign.media) {
+      try {
+        await updateCampaign(this.currentCampaign.requestId, { media });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
 
   /** Sort MEDIAS alphabetically on value, then append Others, then display them inline + flexwrap */
   rearrangeMedias() {

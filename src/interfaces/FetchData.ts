@@ -18,3 +18,13 @@ export interface FetchData {
   params?: QueryParams;
   options?: RequestInit;
 }
+
+export interface PaginatedResults<T> {
+  items: T[];
+  totalItems: number;
+  // paginationLinks: PaginationLinks;
+}
+
+type PaginationLinks = {
+  [K in 'first' | 'prev' | 'next' | 'last']: string;
+};

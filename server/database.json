@@ -1,6 +1,7 @@
 {
   "requests": [
     {
+      "id": 1,
       "requestId": 1,
       "advice": false,
       "campaignName": "Titre campagne Test 1",
@@ -48,11 +49,6 @@
       ],
       "media": [
         {
-          "mediaId": 1,
-          "name": "LABELING_PACKAGING",
-          "value": "Labeling/Packaging"
-        },
-        {
           "mediaId": 6,
           "name": "PROMOTIONS",
           "value": "Promotions"
@@ -61,10 +57,16 @@
           "mediaId": 7,
           "name": "RADIO",
           "value": "Radio"
+        },
+        {
+          "mediaId": 1,
+          "name": "LABELING_PACKAGING",
+          "value": "Labeling/Packaging"
         }
       ]
     },
     {
+      "id": 2,
       "requestId": 2,
       "advice": false,
       "campaignName": "Titre campagne Test 2",
@@ -120,6 +122,7 @@
       ]
     },
     {
+      "id": 3,
       "requestId": 3,
       "advice": true,
       "campaignName": "Campagne 3",
@@ -170,6 +173,7 @@
       ]
     },
     {
+      "id": 4,
       "requestId": 4,
       "advice": false,
       "campaignName": "Campagne 4",
@@ -220,6 +224,7 @@
       ]
     },
     {
+      "id": 5,
       "requestId": 5,
       "advice": false,
       "campaignName": "Titre campagne Test 5",
@@ -274,6 +279,7 @@
       ]
     },
     {
+      "id": 6,
       "requestId": 6,
       "advice": false,
       "campaignName": "Titre campagne Test 6",
@@ -332,6 +338,7 @@
       ]
     },
     {
+      "id": 7,
       "requestId": 7,
       "advice": false,
       "campaignName": "Test 7",
@@ -395,6 +402,7 @@
       ]
     },
     {
+      "id": 8,
       "requestId": 8,
       "advice": false,
       "campaignName": "Test 8",
@@ -453,6 +461,7 @@
       ]
     },
     {
+      "id": 9,
       "requestId": 9,
       "advice": false,
       "campaignName": "Titre campagne Test 9",

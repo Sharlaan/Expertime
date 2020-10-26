@@ -39,12 +39,14 @@ import { Brand } from '@/interfaces/Brand';
 import ListHeader from '@/components/ListHeader.vue';
 import ListItem from '@/components/ListItem.vue';
 
+// TODO: Add loader to support optional chaining
 // TODO: Add resetFilters
 // TODO: Add loading indicators
 // TODO: Extend pagination with itemsPerPage selector (_limit)
 // FIXME: changing page ignores filters, and vice-versa ... merge them.
 // TODO: Add styles
 // TODO: Put brands in Store, since it is used in other components (retrieveBrands in App.mounted => actions => one single request for whole app with static content
+// TODO: Add error notifications
 
 @Component({
   components: { ListHeader, ListItem },
@@ -66,7 +68,7 @@ export default class CampaignsList extends Vue {
 
   async retrieveBrands() {
     try {
-      const { items } = await getAllBrands();
+      const items = await getAllBrands();
       this.brands = items;
     } catch (error) {
       console.error(error);
@@ -85,19 +87,20 @@ export default class CampaignsList extends Vue {
 
   async search() {
     try {
-      const { items } = await getAllCampaigns({
+      const { items, totalItems } = await getAllCampaigns({
         page: 1,
         query: this.query,
         brandId: this.selectedBrand,
       });
       this.campaigns = items;
+      this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
     } catch (error) {
       console.error(error);
     }
   }
 
   @Watch('page', { immediate: true })
-  onPageChange(newPage: number, prevPage: number) {
+  onPageChange(newPage: number /*, prevPage: number*/) {
     this.retrieveCampaigns(newPage); // calls to fetch next page, which then will trigger a view refresh
   }
 

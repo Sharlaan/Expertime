@@ -48,7 +48,7 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
    * Header 'Link' format:
    * <http://localhost:3000/requests?_page=1&_limit=3>; rel="first", <http://localhost:3000/requests?_page=2&_limit=3>; rel="next", <http://localhost:3000/requests?_page=3&_limit=3>; rel="last"
    */
-  const links = response.headers.get('Link');
+  // const links = response.headers.get('Link');
 
   // =======  USELESS CODE thanks to v-pagination (but still nice to know)  =======
 
@@ -82,10 +82,16 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
 
   // console.log('paginationLinks', paginationLinks);
 
-  const items = (await response.json()) as R;
-  return {
-    items,
-    ...(totalItems ? { totalItems: +totalItems } : {}),
-    // ...(paginationLinks ? { paginationLinks } : {}),
-  };
+  // const items = (await response.json()) as R;
+
+  // FIXME: fix return types ...
+  type FetchDataReturnType = R extends Array<R> ? { items: R; totalItems: number } : R;
+
+  return (totalItems
+    ? {
+        items: (await response.json()) as R,
+        totalItems: +totalItems,
+        // ...(paginationLinks ? { paginationLinks } : {}),
+      }
+    : await response.json()) as FetchDataReturnType;
 }
