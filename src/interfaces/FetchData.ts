@@ -25,6 +25,6 @@ export interface PaginatedResults<T> {
   // paginationLinks: PaginationLinks;
 }
 
-type PaginationLinks = {
-  [K in 'first' | 'prev' | 'next' | 'last']: string;
-};
+// type PaginationLinks = {
+//   [K in 'first' | 'prev' | 'next' | 'last']: string;
+// };

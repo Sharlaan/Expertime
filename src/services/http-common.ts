@@ -35,10 +35,11 @@ const defaultFetchOptions = {
 
 export default async function fetchData<R>({ endpoint, params, options }: FetchData) {
   const url = `${API_URL}${endpoint}${stringifyParams(params)}`;
+
   const response = await fetch(url, { ...defaultFetchOptions, ...options });
 
   // if (!response.ok) throw new Error(`ERROR ${response.status}: ${response.statusText}`);
-  if (!response.ok) throw response;
+  if (!response.ok || response.status === 204) throw response;
 
   // Another idea would be to save totalItems and links in the Store, then retrieve it in any consuming page
   // this would prevent modifying the response interface to keep it simple (return response.json()) ?
@@ -87,11 +88,13 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
   // FIXME: fix return types ...
   type FetchDataReturnType = R extends Array<R> ? { items: R; totalItems: number } : R;
 
-  return (totalItems
-    ? {
-        items: (await response.json()) as R,
-        totalItems: +totalItems,
-        // ...(paginationLinks ? { paginationLinks } : {}),
-      }
-    : await response.json()) as FetchDataReturnType;
+  return (
+    totalItems
+      ? {
+          items: (await response.json()) as R,
+          totalItems: +totalItems,
+          // ...(paginationLinks ? { paginationLinks } : {}),
+        }
+      : await response.json()
+  ) as FetchDataReturnType;
 }
