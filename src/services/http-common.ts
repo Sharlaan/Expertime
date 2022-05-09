@@ -87,11 +87,13 @@ export default async function fetchData<R>({ endpoint, params, options }: FetchD
   // FIXME: fix return types ...
   type FetchDataReturnType = R extends Array<R> ? { items: R; totalItems: number } : R;
 
-  return (totalItems
-    ? {
-        items: (await response.json()) as R,
-        totalItems: +totalItems,
-        // ...(paginationLinks ? { paginationLinks } : {}),
-      }
-    : await response.json()) as FetchDataReturnType;
+  return (
+    totalItems
+      ? {
+          items: (await response.json()) as R,
+          totalItems: +totalItems,
+          // ...(paginationLinks ? { paginationLinks } : {}),
+        }
+      : await response.json()
+  ) as FetchDataReturnType;
 }
